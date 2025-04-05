@@ -67,6 +67,7 @@ pub enum VariableReflectionType {
     Struct(Vec<(String, VariableReflectionType)>),
     Scalar(slang::ScalarType),
     Vector(slang::ScalarType, usize),
+    Array(Box<VariableReflectionType>, usize),
 }
 
 fn get_scalar_size(scalar_type: &slang::ScalarType) -> u32 {
@@ -91,6 +92,7 @@ impl VariableReflectionType {
                 .iter()
                 .map(|(_, field_data)| field_data.get_size())
                 .fold(0, |a, f| (a + f).div_ceil(f) * f),
+            VariableReflectionType::Array(ty, count) => ty.get_size() * *count as u32,
         }
     }
 }
@@ -192,11 +194,14 @@ fn bound_resource_from_slang_type(
     slang_type: &slang::reflection::Type,
     slang_layout: &slang::reflection::VariableLayout,
 ) -> BoundParameter {
-    if matches!(slang_layout.category(), ParameterCategory::Uniform)  {
+    if matches!(slang_layout.category(), ParameterCategory::Uniform) {
         return BoundParameter::Uniform {
             uniform_offset: slang_layout.offset(ParameterCategory::Uniform),
-            resource_result: reflection_type_from_slang_type(slang_type, Some(slang_layout)),
-        }
+            resource_result: reflection_type_from_slang_type(
+                slang_type,
+                Some(slang_layout.type_layout()),
+            ),
+        };
     }
     match slang_type.kind() {
         slang::TypeKind::Resource => match slang_type.resource_shape() {
@@ -209,7 +214,7 @@ fn bound_resource_from_slang_type(
                     tex_type: resource_shape_to_tex_type(slang_type.resource_shape()),
                     resource_result: reflection_type_from_slang_type(
                         slang_type.resource_result_type(),
-                        Some(slang_layout.type_layout().element_var_layout()),
+                        Some(slang_layout.type_layout().element_type_layout()),
                     ),
                     format: slang_layout.image_format(),
                     resource_access: slang_layout.type_layout().resource_access().unwrap(),
@@ -220,19 +225,14 @@ fn bound_resource_from_slang_type(
                 resource: BoundResource::StructuredBuffer {
                     resource_result: reflection_type_from_slang_type(
                         slang_type.element_type(),
-                        Some(slang_layout.type_layout().element_var_layout()),
+                        Some(slang_layout.type_layout().element_type_layout()),
                     ),
                     resource_access: slang_layout.type_layout().resource_access().unwrap(),
                 },
             },
-            slang::ResourceShape::SlangResourceNone => panic!(
-                "{:?}, {:?}, {:?}, {:?}",
-                slang_layout.category(),
-                slang_type.resource_shape(),
-                slang_type.name(),
-                slang_type.kind()
-            ),
-            rs => panic!("{rs:?} resource shape not implemented for bound_resource_from_slang_type")
+            rs => {
+                panic!("{rs:?} resource shape not implemented for bound_resource_from_slang_type")
+            }
         },
         slang::TypeKind::SamplerState => BoundParameter::Resource {
             binding_index: slang_layout.binding_index(),
@@ -247,7 +247,7 @@ fn bound_resource_from_slang_type(
 
 fn reflection_type_from_slang_type(
     slang_type: &slang::reflection::Type,
-    slang_layout: Option<&slang::reflection::VariableLayout>,
+    slang_layout: Option<&slang::reflection::TypeLayout>,
 ) -> VariableReflectionType {
     match slang_type.kind() {
         TypeKind::None => panic!("Unrecognized variable type"),
@@ -260,7 +260,7 @@ fn reflection_type_from_slang_type(
             }
             let layout_fields = slang_layout
                 .iter()
-                .flat_map(|l| l.type_layout().fields().map(Option::from))
+                .flat_map(|l| l.fields().map(Option::from))
                 .chain(std::iter::repeat(None));
             VariableReflectionType::Struct(
                 slang_type
@@ -269,13 +269,22 @@ fn reflection_type_from_slang_type(
                     .map(|(type_field, layout_field)| {
                         (
                             type_field.name().to_string(),
-                            reflection_type_from_slang_type(type_field.ty(), layout_field),
+                            reflection_type_from_slang_type(
+                                type_field.ty(),
+                                layout_field.map(|l| l.type_layout()),
+                            ),
                         )
                     })
                     .collect::<Vec<_>>(),
             )
         }
-        TypeKind::Array => todo!(),
+        TypeKind::Array => VariableReflectionType::Array(
+            Box::new(reflection_type_from_slang_type(
+                slang_type.element_type(),
+                slang_layout.map(|l| l.element_type_layout()),
+            )),
+            slang_type.element_count(),
+        ),
         TypeKind::Matrix => todo!(),
         TypeKind::Vector => VariableReflectionType::Vector(
             slang_type.element_type().scalar_type(),
