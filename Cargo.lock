@@ -136,9 +136,9 @@ checksum = "57c0d7b74b563b49d38dae00a0c37d4d6de9b432382b2892f0574ddcae73fd0a"
 
 [[package]]
 name = "prettyplease"
-version = "0.2.31"
+version = "0.2.32"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5316f57387668042f561aae71480de936257848f9c43ce528e311d89a07cadeb"
+checksum = "664ec5419c51e34154eec046ebcba56312d5a2fc3b09a06da188e1ad21afadf6"
 dependencies = [
  "proc-macro2",
  "syn",
@@ -206,6 +206,7 @@ checksum = "0fda2ff0d084019ba4d7c6f371c95d8fd75ce3524c3cb8fb653a3023f6323e64"
 [[package]]
 name = "slang"
 version = "0.1.0"
+source = "git+https://github.com/Devon7925/slang-rs#1c7e3f35a8fa52fdfd3d2c3e68270bc7c541b98c"
 dependencies = [
  "libc",
  "paste",
@@ -226,6 +227,7 @@ dependencies = [
 [[package]]
 name = "slang-sys"
 version = "0.1.0"
+source = "git+https://github.com/Devon7925/slang-rs#1c7e3f35a8fa52fdfd3d2c3e68270bc7c541b98c"
 dependencies = [
  "bindgen",
  "paste",
