@@ -10,7 +10,9 @@ jobs:
   test:
     runs-on: windows-latest
     env:
+      GITHUB_PATH: ${{ github.workspace }}\slang\bin;${{ github.path }}
       SLANG_DIR: ${{ github.workspace }}/slang
+      RUST_BACKTRACE: full
 
     steps:
       - uses: actions/checkout@v4
