@@ -214,7 +214,7 @@ fn bound_resource_from_slang_type(
                     tex_type: resource_shape_to_tex_type(slang_type.resource_shape()),
                     resource_result: reflection_type_from_slang_type(
                         slang_type.resource_result_type(),
-                        Some(slang_layout.type_layout().element_type_layout()),
+                        None,
                     ),
                     format: slang_layout.image_format(),
                     resource_access: slang_layout.type_layout().resource_access().unwrap(),

@@ -1,0 +1,33 @@
+name: Rust Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: windows-latest
+    env:
+      SLANG_DIR: ${{ github.workspace }}/slang
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download latest Slang release
+        uses: robinraju/release-downloader@v1
+        with:
+          repository: 'shader-slang/slang'
+          latest: true
+          fileName: 'slang-*-windows-x86_64.zip'
+          out-file-path: 'slang'
+          extract: true
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - name: Run tests
+        run: cargo test --verbose
