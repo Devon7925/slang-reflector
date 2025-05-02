@@ -10,7 +10,6 @@ jobs:
   test:
     runs-on: windows-latest
     env:
-      GITHUB_PATH: ${{ github.workspace }}\slang\bin;${{ github.path }}
       SLANG_DIR: ${{ github.workspace }}/slang
       RUST_BACKTRACE: full
 
@@ -30,6 +29,7 @@ jobs:
         with:
           toolchain: stable
           override: true
-
+      - name: Add slang to PATH
+        run: echo "${{ github.workspace }}\slang\bin" >> $env:GITHUB_PATH
       - name: Run tests
         run: cargo test --verbose
