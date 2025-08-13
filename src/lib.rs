@@ -310,28 +310,10 @@ fn reflection_type_from_slang_type(
 
 fn resource_shape_to_tex_type(resource_shape: slang::ResourceShape) -> TextureType {
     match resource_shape {
-        slang::ResourceShape::SlangResourceBaseShapeMask => todo!(),
-        slang::ResourceShape::SlangResourceNone => todo!(),
         slang::ResourceShape::SlangTexture1d => TextureType::Dim1,
         slang::ResourceShape::SlangTexture2d => TextureType::Dim2,
         slang::ResourceShape::SlangTexture3d => TextureType::Dim3,
         slang::ResourceShape::SlangTextureCube => TextureType::Cube,
-        slang::ResourceShape::SlangTextureBuffer => todo!(),
-        slang::ResourceShape::SlangStructuredBuffer => todo!(),
-        slang::ResourceShape::SlangByteAddressBuffer => todo!(),
-        slang::ResourceShape::SlangResourceUnknown => todo!(),
-        slang::ResourceShape::SlangAccelerationStructure => todo!(),
-        slang::ResourceShape::SlangTextureSubpass => todo!(),
-        slang::ResourceShape::SlangResourceExtShapeMask => todo!(),
-        slang::ResourceShape::SlangTextureFeedbackFlag => todo!(),
-        slang::ResourceShape::SlangTextureShadowFlag => todo!(),
-        slang::ResourceShape::SlangTextureArrayFlag => todo!(),
-        slang::ResourceShape::SlangTextureMultisampleFlag => todo!(),
-        slang::ResourceShape::SlangTexture1dArray => todo!(),
-        slang::ResourceShape::SlangTexture2dArray => todo!(),
-        slang::ResourceShape::SlangTextureCubeArray => todo!(),
-        slang::ResourceShape::SlangTexture2dMultisample => todo!(),
-        slang::ResourceShape::SlangTexture2dMultisampleArray => todo!(),
-        slang::ResourceShape::SlangTextureSubpassMultisample => todo!(),
+        _ => todo!(),
     }
 }
