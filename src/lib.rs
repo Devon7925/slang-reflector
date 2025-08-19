@@ -71,7 +71,7 @@ pub enum BoundResource {
 #[cfg_attr(feature = "derive-serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Clone)]
 pub enum VariableReflectionType {
-    Struct(Vec<(String, VariableReflectionType)>),
+    Struct(String, Vec<(String, VariableReflectionType)>),
     Scalar(slang::ScalarType),
     Vector(slang::ScalarType, usize),
     Array(Box<VariableReflectionType>, usize),
@@ -95,7 +95,7 @@ impl VariableReflectionType {
                 let count = count.next_power_of_two() as u32;
                 count * get_scalar_size(scalar_type)
             }
-            VariableReflectionType::Struct(fields) => fields
+            VariableReflectionType::Struct(_, fields) => fields
                 .iter()
                 .map(|(_, field_data)| field_data.get_size())
                 .fold(0, |a, f| (a + f).div_ceil(f) * f),
@@ -272,6 +272,7 @@ fn reflection_type_from_slang_type(
                 .flat_map(|l| l.fields().map(Option::from))
                 .chain(std::iter::repeat(None));
             VariableReflectionType::Struct(
+                slang_type.name().to_string(),
                 slang_type
                     .fields()
                     .zip(layout_fields)
