@@ -5,3 +5,7 @@ edition = "2024"
 
 [dependencies]
 slang = { git = "https://github.com/Devon7925/slang-rs" }
+serde = { version = "1.0", optional = true }
+
+[features]
+derive-serde = ["dep:serde"]

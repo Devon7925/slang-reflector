@@ -7,20 +7,23 @@ pub use slang::{
 };
 use slang::{ParameterCategory, TypeKind, reflection::UserAttribute};
 
-#[derive(Debug)]
+#[cfg_attr(feature = "derive-serde", derive(serde::Serialize, serde::Deserialize))]
+#[derive(Debug, Clone)]
 pub enum UserAttributeParameter {
     String(String),
     Int(i32),
     Float(f32),
 }
 
-#[derive(Debug)]
+#[cfg_attr(feature = "derive-serde", derive(serde::Serialize, serde::Deserialize))]
+#[derive(Debug, Clone)]
 pub struct UserAttributeReflection {
     pub name: String,
     pub parameters: Vec<UserAttributeParameter>,
 }
 
-#[derive(Debug)]
+#[cfg_attr(feature = "derive-serde", derive(serde::Serialize, serde::Deserialize))]
+#[derive(Debug, Clone)]
 pub enum TextureType {
     Dim1,
     Dim2,
@@ -28,14 +31,16 @@ pub enum TextureType {
     Cube,
 }
 
-#[derive(Debug)]
+#[cfg_attr(feature = "derive-serde", derive(serde::Serialize, serde::Deserialize))]
+#[derive(Debug, Clone)]
 pub struct VariableReflection {
     pub name: String,
     pub reflection_type: BoundParameter,
     pub user_attributes: Vec<UserAttributeReflection>,
 }
 
-#[derive(Debug)]
+#[cfg_attr(feature = "derive-serde", derive(serde::Serialize, serde::Deserialize))]
+#[derive(Debug, Clone)]
 pub enum BoundParameter {
     Uniform {
         uniform_offset: usize,
@@ -47,7 +52,8 @@ pub enum BoundParameter {
     },
 }
 
-#[derive(Debug)]
+#[cfg_attr(feature = "derive-serde", derive(serde::Serialize, serde::Deserialize))]
+#[derive(Debug, Clone)]
 pub enum BoundResource {
     StructuredBuffer {
         resource_result: VariableReflectionType,
@@ -62,7 +68,8 @@ pub enum BoundResource {
     },
 }
 
-#[derive(Debug)]
+#[cfg_attr(feature = "derive-serde", derive(serde::Serialize, serde::Deserialize))]
+#[derive(Debug, Clone)]
 pub enum VariableReflectionType {
     Struct(Vec<(String, VariableReflectionType)>),
     Scalar(slang::ScalarType),
@@ -97,13 +104,15 @@ impl VariableReflectionType {
     }
 }
 
-#[derive(Debug)]
+#[cfg_attr(feature = "derive-serde", derive(serde::Serialize, serde::Deserialize))]
+#[derive(Debug, Clone)]
 pub struct EntrypointReflection {
     pub name: String,
     pub user_attributes: Vec<UserAttributeReflection>,
 }
 
-#[derive(Debug)]
+#[cfg_attr(feature = "derive-serde", derive(serde::Serialize, serde::Deserialize))]
+#[derive(Debug, Clone)]
 pub struct ProgramReflection {
     pub variables: Vec<VariableReflection>,
     pub entry_points: Vec<EntrypointReflection>,
