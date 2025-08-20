@@ -1,5 +1,4 @@
-use std::ops::Deref;
-
+use shader_slang::Downcast;
 use slang_reflector::ProgramLayoutReflector;
 
 #[test]
@@ -30,7 +29,7 @@ fn multi_entrypoint() {
         .targets(&targets)
         .options(&session_options);
 
-    let Ok(slang_session) = global_slang_session.create_session(&session_desc) else {
+    let Some(slang_session) = global_slang_session.create_session(&session_desc) else {
         panic!("Failed to create slang session");
     };
 
@@ -61,10 +60,10 @@ fn multi_entrypoint() {
 
             println!("Dependency module loaded: {}", dependency);
 
-            components.push(dep_module.deref().clone());
+            components.push(dep_module.downcast().clone());
 
             for entry_point in dep_module.entry_points() {
-                components.push(entry_point.deref().clone());
+                components.push(entry_point.downcast().clone());
             }
         }
     }
