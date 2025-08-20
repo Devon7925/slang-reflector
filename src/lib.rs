@@ -3,7 +3,7 @@ use std::collections::HashMap;
 pub use shader_slang::{
     Blob, CompileTarget, CompilerOptions, ComponentType, Error, GlobalSession,
     ImageFormat, Module, OptimizationLevel, ResourceAccess, Result, ScalarType, Session,
-    SessionDesc, Stage, TargetDesc,
+    SessionDesc, Stage, TargetDesc, Downcast,
 };
 use shader_slang::{reflection::UserAttribute, ParameterCategory, ResourceShape, TypeKind};
 

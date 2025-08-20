@@ -1,5 +1,4 @@
-use shader_slang::Downcast;
-use slang_reflector::ProgramLayoutReflector;
+use slang_reflector::{ProgramLayoutReflector, Downcast};
 
 #[test]
 fn multi_entrypoint() {
