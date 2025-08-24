@@ -71,7 +71,11 @@ pub enum BoundResource {
 #[cfg_attr(feature = "derive-serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Clone)]
 pub enum VariableReflectionType {
-    Struct(String, Vec<(String, VariableReflectionType)>),
+    Struct {
+        name: String, 
+        props: Vec<(String, VariableReflectionType)>,
+        user_attributes: Vec<UserAttributeReflection>,
+    },
     Scalar(ScalarType),
     Vector(ScalarType, usize),
     Array(Box<VariableReflectionType>, usize),
@@ -95,7 +99,7 @@ impl VariableReflectionType {
                 let count = count.next_power_of_two() as u32;
                 count * get_scalar_size(scalar_type)
             }
-            VariableReflectionType::Struct(_, fields) => fields
+            VariableReflectionType::Struct{ props, .. } => props
                 .iter()
                 .map(|(_, field_data)| field_data.get_size())
                 .fold(0, |a, f| (a + f).div_ceil(f) * f),
@@ -271,9 +275,11 @@ fn reflection_type_from_slang_type(
                 .iter()
                 .flat_map(|l| l.fields().map(Option::from))
                 .chain(std::iter::repeat(None));
-            VariableReflectionType::Struct(
-                slang_type.name().unwrap().to_string(),
-                slang_type
+
+            let user_attributes = parameter_user_attributes(slang_type.user_attributes());
+            VariableReflectionType::Struct {
+                name: slang_type.name().unwrap().to_string(),
+                props: slang_type
                     .fields()
                     .zip(layout_fields)
                     .map(|(type_field, layout_field)| {
@@ -286,7 +292,8 @@ fn reflection_type_from_slang_type(
                         )
                     })
                     .collect::<Vec<_>>(),
-            )
+                user_attributes,
+            }
         }
         TypeKind::Array => VariableReflectionType::Array(
             Box::new(reflection_type_from_slang_type(
