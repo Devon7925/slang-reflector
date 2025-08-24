@@ -1,5 +1,3 @@
-mod util;
-
 use std::collections::HashMap;
 
 pub use shader_slang::{
@@ -186,9 +184,7 @@ fn parameter_user_attributes<'a>(
 
         for i in 0..attribute.argument_count() {
             if let Some(string_arg) = attribute.argument_value_string(i) {
-                parameters.push(UserAttributeParameter::String(
-                    util::unescape(string_arg).unwrap(),
-                ))
+                parameters.push(UserAttributeParameter::String(string_arg.to_string()))
             } else if let Some(int_arg) = attribute.argument_value_int(i) {
                 parameters.push(UserAttributeParameter::Int(int_arg))
             } else if let Some(float_arg) = attribute.argument_value_float(i) {
